@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.datastore.preferences.core.stringPreferencesKey
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -37,6 +38,7 @@ import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.data.repositories.StateRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -71,7 +73,9 @@ import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import java.util.Timer
 import kotlin.math.absoluteValue
+import kotlin.concurrent.schedule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -120,6 +124,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val inputEventHub: InputEventHub,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val settingsAdapter: SettingsAdapter,
+    private val stateRepository: StateRepository
 ) : PerformActionsUseCase {
 
     companion object {
@@ -1118,6 +1123,23 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.TalkBackGesture -> {
                 result = service.performTalkBackGesture(action.gesture)
+            }
+
+            is ActionData.SetState -> {
+                stateRepository.set(stringPreferencesKey(action.stateKey), action.value)
+
+                if (action.resetValueOnTimeout) {
+                    // TODO: Allow this schedule to be replaced
+                    Timer("ActionData.SetState.resetValueOnTimeout", false)
+                        .schedule(action.resetTimeoutMillis.toLong()) {
+                            stateRepository.set(
+                                stringPreferencesKey(action.stateKey),
+                                action.resetValue
+                            )
+                        }
+                }
+
+                result = success()
             }
         }
 

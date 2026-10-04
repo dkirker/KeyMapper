@@ -149,6 +149,8 @@ class KeyMapConstraintsComparator(
             )
             ConstraintData.NotificationPanelShowing -> Success("")
             ConstraintData.NotificationPanelNotShowing -> Success("")
+
+            is ConstraintData.CompareStateValue -> Success("")
         }
     }
 }

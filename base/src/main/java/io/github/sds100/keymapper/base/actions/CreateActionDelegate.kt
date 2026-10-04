@@ -66,6 +66,8 @@ class CreateActionDelegate(
     var talkBackGestureDialogState: TalkBackGestureDialogState? by mutableStateOf(null)
     var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState?
         by mutableStateOf(null)
+    var setStateActionBottomSheetState: SetStateActionBottomSheetState?
+            by mutableStateOf(null)
     var createNotificationActionBottomSheetState: CreateNotificationActionBottomSheetState?
         by mutableStateOf(null)
     var toastActionBottomSheetState: ToastActionBottomSheetState? by mutableStateOf(null)
@@ -313,6 +315,51 @@ class CreateActionDelegate(
         val state = modifySettingActionBottomSheetState ?: return
         val permission = useCase.getRequiredPermissionForSettingType(state.settingType)
         useCase.requestPermission(permission)
+    }
+
+    fun onDismissSetStateClick() {
+        setStateActionBottomSheetState = null
+    }
+
+    fun onDoneSetStateClick() {
+        val state = setStateActionBottomSheetState ?: return
+        val result = ActionData.SetState(
+            stateKey = state.stateKey,
+            value = state.value,
+            resetValueOnTimeout = state.resetValueOnTimeout,
+            resetTimeoutMillis = state.resetTimeoutMillis,
+            resetValue = state.resetValue
+        )
+
+        setStateActionBottomSheetState = null
+        actionResult.update { result }
+    }
+
+    fun onSetStateKeyChange(key: String) {
+        setStateActionBottomSheetState =
+            setStateActionBottomSheetState?.copy(
+                stateKey = key
+            )
+    }
+
+    fun onSetStateValueChange(value: String) {
+        setStateActionBottomSheetState =
+            setStateActionBottomSheetState?.copy(value = value)
+    }
+
+    fun onSetStateResetOnTimeoutChange(value: Boolean) {
+        setStateActionBottomSheetState =
+            setStateActionBottomSheetState?.copy(resetValueOnTimeout = value)
+    }
+
+    fun onSetStateResetTimeoutChange(value: Int) {
+        setStateActionBottomSheetState =
+            setStateActionBottomSheetState?.copy(resetTimeoutMillis = value)
+    }
+
+    fun onSetStateResetValueChange(value: String) {
+        setStateActionBottomSheetState =
+            setStateActionBottomSheetState?.copy(resetValue = value)
     }
 
     fun onCreateNotificationTitleChange(title: String) {
@@ -1228,6 +1275,20 @@ class CreateActionDelegate(
                 val initialGesture = (oldData as? ActionData.TalkBackGesture)?.gesture
                     ?: TalkBackGestureType.entries.first()
                 talkBackGestureDialogState = TalkBackGestureDialogState(initialGesture)
+                return null
+            }
+
+            ActionId.SET_STATE -> {
+                val oldAction = oldData as? ActionData.SetState
+
+                setStateActionBottomSheetState = SetStateActionBottomSheetState(
+                    stateKey = oldAction?.stateKey ?: "",
+                    value = oldAction?.value ?: "",
+                    resetValueOnTimeout = oldAction?.resetValueOnTimeout ?: false,
+                    resetTimeoutMillis = oldAction?.resetTimeoutMillis ?: -1,
+                    resetValue = oldAction?.resetValue ?: ""
+                )
+
                 return null
             }
         }

@@ -56,6 +56,7 @@ fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConst
 
     TimeConstraintBottomSheet(viewModel)
     DisplayResolutionConstraintBottomSheet(viewModel)
+    CompareStateValueConstraintBottomSheet(viewModel)
 
     ChooseConstraintScreen(
         modifier = modifier,

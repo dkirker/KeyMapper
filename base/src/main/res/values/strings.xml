@@ -329,6 +329,13 @@
     <string name="constraint_time_bottom_sheet_edit_start_time">Edit start time</string>
     <string name="constraint_time_bottom_sheet_end_time">End time</string>
     <string name="constraint_time_bottom_sheet_edit_end_time">Edit end time</string>
+
+    <string name="constraint_compare_state_value">Compare state value</string>
+    <string name="constraint_compare_state_value_formatted">Compare State %s %s %s</string>
+    <string name="constraint_compare_state_value_bottom_sheet_title">Compare state value</string>
+    <string name="constraint_compare_state_value_state_key">State key</string>
+    <string name="constraint_compare_state_value_operator">Operator</string>
+    <string name="constraint_compare_state_value_value">Value</string>
     <!-- Constraints -->
 
     <!-- Click types -->
@@ -1330,6 +1337,20 @@
     <string name="choose_setting_title">Choose setting</string>
     <string name="choose_setting_empty">No settings found</string>
     <string name="choose_existing_setting">Choose existing setting</string>
+
+    <string name="action_set_state">Set state</string>
+    <string name="action_set_state_formatted">Set State: %s = %s (reset to %s in %d millis)</string>
+    <string name="set_state_bottom_sheet_title">Set state</string>
+    <string name="set_state_key_label">Key</string>
+    <string name="set_state_value_label">Value</string>
+    <string name="set_state_key_empty_error">State key cannot be empty</string>
+    <string name="set_state_value_empty_error">State value cannot be empty</string>
+    <string name="set_state_reset_timeout_invalid_error">Timeout cannot be less than or equal to 0</string>
+    <string name="set_state_reset_timeout_format_error">Timeout must be an integer greater than 0</string>
+    <string name="set_state_reset_value_empty_error">Reset to value cannot be empty</string>
+    <string name="set_state_reset_value_on_timeout_label">Reset value on timeout</string>
+    <string name="set_state_reset_value_label">Reset to Value</string>
+    <string name="set_state_reset_timeout_millis_label">Reset timeout (millis)</string>
     <!-- action labels -->
 
     <!-- action category labels -->

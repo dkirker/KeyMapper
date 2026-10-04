@@ -193,6 +193,15 @@ class ConstraintUiHelper(
                 timeFormatter.format(constraint.data.endTime),
             ),
         )
+
+        is ConstraintData.CompareStateValue -> getString(
+            R.string.constraint_compare_state_value_formatted,
+            arrayOf(
+                constraint.data.stateKey,
+                constraint.data.operator.operator,
+                constraint.data.value
+            )
+        )
     }
 
     fun getIcon(constraint: Constraint): ComposeIconInfo = when (constraint.data) {

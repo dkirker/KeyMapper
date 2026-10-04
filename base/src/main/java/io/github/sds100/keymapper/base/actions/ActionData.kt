@@ -1057,4 +1057,30 @@ sealed class ActionData : Comparable<ActionData> {
             else -> super.compareTo(other)
         }
     }
+
+    @Serializable
+    data class SetState(
+        val stateKey: String,
+        val value: String,
+        val resetValueOnTimeout: Boolean,
+        val resetTimeoutMillis: Int,
+        val resetValue: String
+    ) : ActionData() {
+        override val id: ActionId = ActionId.SET_STATE
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is SetState -> compareValuesBy(
+                this,
+                other,
+                { it.stateKey },
+                { it.value },
+                { it.resetValueOnTimeout },
+                { it.resetTimeoutMillis },
+                { it.resetValue },
+            )
+
+            else -> super.compareTo(other)
+        }
+    }
+
 }

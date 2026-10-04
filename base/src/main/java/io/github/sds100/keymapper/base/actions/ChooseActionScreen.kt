@@ -61,6 +61,7 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     CreateNotificationActionBottomSheet(delegate)
     ToastActionBottomSheet(delegate)
     PickTalkBackGestureDialog(delegate)
+    SetStateActionBottomSheet(delegate)
 }
 
 @Composable

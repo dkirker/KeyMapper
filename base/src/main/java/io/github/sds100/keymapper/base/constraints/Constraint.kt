@@ -246,6 +246,12 @@ sealed class ConstraintData {
         val startTime: LocalTime by lazy { LocalTime.of(startHour, startMinute) }
         val endTime: LocalTime by lazy { LocalTime.of(endHour, endMinute) }
     }
+
+    @Serializable
+    data class CompareStateValue(val stateKey: String, val operator: CompareStateValueOperatorEnum, val value: String) : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.COMPARE_STATE_VALUE
+    }
+
 }
 
 @Serializable
@@ -453,6 +459,22 @@ object ConstraintEntityMapper {
                     startMinute = startMin,
                     endHour = endHour,
                     endMinute = endMin,
+                )
+            }
+
+            ConstraintEntity.COMPARE_STATE_VALUE -> {
+                val stateKey =
+                    entity.extras.getData(ConstraintEntity.EXTRA_COMPARE_STATE_VALUE_STATE_KEY).valueOrNull() ?: ""
+                val operatorString =
+                    entity.extras.getData(ConstraintEntity.EXTRA_COMPARE_STATE_VALUE_OPERATOR).valueOrNull() ?: ""
+                val operator: CompareStateValueOperatorEnum = CompareStateValueOperatorEnum.fromOperator(operatorString)
+                val value =
+                    entity.extras.getData(ConstraintEntity.EXTRA_COMPARE_STATE_VALUE_VALUE).valueOrNull() ?: ""
+
+                ConstraintData.CompareStateValue(
+                    stateKey = stateKey,
+                    operator = operator,
+                    value = value
                 )
             }
 
@@ -788,6 +810,23 @@ object ConstraintEntityMapper {
             EntityExtra(
                 ConstraintEntity.EXTRA_END_TIME,
                 "${constraint.data.endHour}:${constraint.data.endMinute}",
+            ),
+        )
+
+        is ConstraintData.CompareStateValue -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.COMPARE_STATE_VALUE,
+            EntityExtra(
+                ConstraintEntity.EXTRA_COMPARE_STATE_VALUE_STATE_KEY,
+                constraint.data.stateKey,
+            ),
+            EntityExtra(
+                ConstraintEntity.EXTRA_COMPARE_STATE_VALUE_OPERATOR,
+                constraint.data.operator.operator,
+            ),
+            EntityExtra(
+                ConstraintEntity.EXTRA_COMPARE_STATE_VALUE_VALUE,
+                constraint.data.value,
             ),
         )
     }

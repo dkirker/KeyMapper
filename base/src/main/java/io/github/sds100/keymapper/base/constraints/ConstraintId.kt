@@ -70,4 +70,7 @@ enum class ConstraintId {
     NOTIFICATION_PANEL_NOT_SHOWING,
 
     TIME,
+
+    COMPARE_STATE_VALUE,
+
 }

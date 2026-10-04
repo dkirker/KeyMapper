@@ -2,11 +2,13 @@ package io.github.sds100.keymapper.base.constraints
 
 import android.media.AudioManager
 import android.os.Build
+import androidx.datastore.preferences.core.stringPreferencesKey
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.data.repositories.StateRepository
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -42,6 +44,7 @@ class LazyConstraintSnapshot(
     powerAdapter: PowerAdapter,
     private val foldableAdapter: FoldableAdapter,
     volumeAdapter: VolumeAdapter,
+    private val stateRepository: StateRepository,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy {
@@ -235,6 +238,60 @@ class LazyConstraintSnapshot(
                     localTime.isAfter(constraint.data.startTime) &&
                         localTime.isBefore(constraint.data.endTime)
                 }
+
+            is ConstraintData.CompareStateValue -> {
+                val stateValue = stateRepository.get(stringPreferencesKey(constraint.data.stateKey)).firstBlocking()
+                val operator = constraint.data.operator
+                val value = constraint.data.value
+                var result = false
+
+                if (stateValue != null) {
+                    if (operator == CompareStateValueOperatorEnum.NONE) {
+                        result = false
+                    } else if (operator == CompareStateValueOperatorEnum.IS) {
+                        result = stateValue == value
+                    } else if (operator == CompareStateValueOperatorEnum.IS_NOT) {
+                        result = stateValue != value
+                    } else {
+                        try {
+                            var left = stateValue.toInt()
+                            var right = value.toInt()
+
+                            result = when (operator) {
+                                CompareStateValueOperatorEnum.EQUAL_TO -> {
+                                    left == right
+                                }
+
+                                CompareStateValueOperatorEnum.NOT_EQUAL_TO -> {
+                                    left != right
+                                }
+
+                                CompareStateValueOperatorEnum.LESS_THAN -> {
+                                    left < right
+                                }
+
+                                CompareStateValueOperatorEnum.LESS_THAN_OR_EQUAL -> {
+                                    left <= right
+                                }
+
+                                CompareStateValueOperatorEnum.GREATER_THAN -> {
+                                    left > right
+                                }
+
+                                CompareStateValueOperatorEnum.GREATER_THAN_OR_EQUAL -> {
+                                    left >= right
+                                }
+
+                                else -> false
+                            }
+                        } catch (_: Exception) {
+
+                        }
+                    }
+                }
+
+                result
+            }
         }
 
         return isSatisfied

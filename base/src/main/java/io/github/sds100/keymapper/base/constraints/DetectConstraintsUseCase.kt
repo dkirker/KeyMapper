@@ -5,6 +5,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.data.repositories.StateRepository
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -36,6 +37,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
     private val powerAdapter: PowerAdapter,
     private val foldableAdapter: FoldableAdapter,
     private val volumeAdapter: VolumeAdapter,
+    private val stateRepository: StateRepository
 ) : DetectConstraintsUseCase {
 
     @AssistedFactory
@@ -56,6 +58,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
         powerAdapter,
         foldableAdapter,
         volumeAdapter,
+        stateRepository
     )
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
@@ -124,6 +127,8 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.supportedResolutions.map {
                 dependency
             }
+
+            ConstraintDependency.NONE -> emptyFlow()
         }
     }
 }

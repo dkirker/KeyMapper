@@ -783,6 +783,13 @@ class ActionUiHelper(
             val actionLabel = getString(TalkBackGestureStrings.getActionLabel(action.gesture))
             getString(R.string.action_talkback_gesture_formatted, actionLabel)
         }
+
+        is ActionData.SetState -> {
+            getString(
+                R.string.action_set_state_formatted,
+                arrayOf(action.stateKey, action.value, action.resetValue, action.resetTimeoutMillis),
+            )
+        }
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

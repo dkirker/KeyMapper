@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.BluetoothConnected
 import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CallEnd
+import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.Keyboard
@@ -124,6 +125,8 @@ object ConstraintUtils {
             -> ConstraintCategory.DISPLAY
 
         ConstraintId.TIME -> ConstraintCategory.TIME
+
+        ConstraintId.COMPARE_STATE_VALUE -> ConstraintCategory.DEVICE
     }
 
     fun getIcon(constraintId: ConstraintId): ComposeIconInfo = when (constraintId) {
@@ -234,6 +237,8 @@ object ConstraintUtils {
             ComposeIconInfo.Vector(Icons.Outlined.NotificationsOff)
 
         ConstraintId.TIME -> ComposeIconInfo.Vector(Icons.Outlined.Timer)
+
+        ConstraintId.COMPARE_STATE_VALUE -> ComposeIconInfo.Vector(Icons.Outlined.DataObject)
     }
 
     fun getTitleStringId(constraintId: ConstraintId): Int = when (constraintId) {
@@ -340,6 +345,8 @@ object ConstraintUtils {
             R.string.constraint_notification_panel_not_showing
 
         ConstraintId.TIME -> R.string.constraint_time
+
+        ConstraintId.COMPARE_STATE_VALUE -> R.string.constraint_compare_state_value
     }
 
     fun Constraint.getDependency(): Set<ConstraintDependency> {
@@ -427,6 +434,8 @@ object ConstraintUtils {
                 )
 
             is ConstraintData.DisplayResolution -> setOf(ConstraintDependency.DISPLAY_RESOLUTIONS)
+
+            is ConstraintData.CompareStateValue -> setOf(ConstraintDependency.NONE)
         }
     }
 }

@@ -72,6 +72,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.CREATE_NOTIFICATION -> ActionId.CREATE_NOTIFICATION
 
             ActionEntity.Type.TOAST -> ActionId.TOAST
+
+            ActionEntity.Type.SET_STATE -> ActionId.SET_STATE
         }
 
         return when (actionId) {
@@ -909,6 +911,34 @@ object ActionDataEntityMapper {
                     value = value,
                 )
             }
+
+            ActionId.SET_STATE -> {
+                val value = entity.extras.getData(ActionEntity.EXTRA_SET_STATE_VALUE)
+                    .valueOrNull() ?: "" //return null
+
+                val resetValueOnTimeoutStr = entity.extras.getData(ActionEntity.EXTRA_SET_STATE_RESET_ON_TIMEOUT)
+                    .valueOrNull() ?: "0"
+                val resetValueOnTimeout = resetValueOnTimeoutStr == "1"
+                val resetTimeoutMillisStr = entity.extras.getData(ActionEntity.EXTRA_SET_STATE_RESET_TIMEOUT)
+                    .valueOrNull() ?: "-1"
+                val resetTimeoutMillis = try {
+                    resetTimeoutMillisStr.toInt()
+                } catch (_: Exception) {
+                    -1
+                }
+
+                val resetValue = entity.extras.getData(ActionEntity.EXTRA_SET_STATE_RESET_VALUE)
+                    .valueOrNull() ?: ""
+
+
+                ActionData.SetState(
+                    stateKey = entity.data,
+                    value = value,
+                    resetValueOnTimeout = resetValueOnTimeout,
+                    resetTimeoutMillis = resetTimeoutMillis,
+                    resetValue = resetValue,
+                )
+            }
         }
     }
 
@@ -938,6 +968,7 @@ object ActionDataEntityMapper {
             is ActionData.ModifySetting -> ActionEntity.Type.MODIFY_SETTING
             is ActionData.CreateNotification -> ActionEntity.Type.CREATE_NOTIFICATION
             is ActionData.Toast -> ActionEntity.Type.TOAST
+            is ActionData.SetState -> ActionEntity.Type.SET_STATE
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -1040,6 +1071,8 @@ object ActionDataEntityMapper {
         is ActionData.GoBack -> SYSTEM_ACTION_ID_MAP[data.id]!!
 
         is ActionData.ModifySetting -> data.settingKey
+
+        is ActionData.SetState -> data.stateKey
 
         else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
@@ -1344,6 +1377,18 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_TALKBACK_GESTURE_TYPE, data.gesture.name),
         )
 
+        is ActionData.SetState -> buildList {
+            add(EntityExtra(ActionEntity.EXTRA_SET_STATE_VALUE, data.value))
+
+            if (data.resetValueOnTimeout) {
+                add(EntityExtra(ActionEntity.EXTRA_SET_STATE_RESET_ON_TIMEOUT, "1"))
+            } else {
+                add(EntityExtra(ActionEntity.EXTRA_SET_STATE_RESET_ON_TIMEOUT, "0"))
+            }
+            add(EntityExtra(ActionEntity.EXTRA_SET_STATE_RESET_TIMEOUT, data.resetTimeoutMillis.toString()))
+            add(EntityExtra(ActionEntity.EXTRA_SET_STATE_RESET_VALUE, data.resetValue))
+        }
+
         else -> emptyList()
     }
 
@@ -1532,5 +1577,7 @@ object ActionDataEntityMapper {
         ActionId.MODIFY_SETTING to "modify_setting",
 
         ActionId.TALKBACK_GESTURE to "talkback_gesture",
+
+        ActionId.SET_STATE to "set_state",
     )
 }

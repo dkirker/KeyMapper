@@ -99,6 +99,9 @@ class ChooseConstraintViewModel @Inject constructor(
     var displayResolutionState: DisplayResolutionSheetState? by mutableStateOf(null)
         private set
 
+    var compareStateValueState: CompareStateValueSheetState? by mutableStateOf(null)
+        private set
+
     init {
         viewModelScope.launch {
             returnResult.collect { constraintData ->
@@ -156,6 +159,43 @@ class ChooseConstraintViewModel @Inject constructor(
                 ),
             )
             displayResolutionState = null
+        }
+    }
+
+    fun onCompareStateValueStateKeyChange(key: String) {
+        compareStateValueState = compareStateValueState?.copy(
+            stateKey = key,
+        )
+    }
+
+    fun onCompareStateValueOperatorChange(operator: CompareStateValueOperatorEnum) {
+        compareStateValueState = compareStateValueState?.copy(
+            operator = operator,
+        )
+    }
+
+    fun onCompareStateValueValueChange(value: String) {
+        compareStateValueState = compareStateValueState?.copy(
+            value = value,
+        )
+    }
+
+    fun onDismissCompareStateValue() {
+        compareStateValueState = null
+    }
+
+    fun onDoneConfigCompareStateValueClick() {
+        val state = compareStateValueState ?: return
+
+        viewModelScope.launch {
+            returnResult.emit(
+                ConstraintData.CompareStateValue(
+                    stateKey = state.stateKey,
+                    operator = state.operator,
+                    value = state.value
+                ),
+            )
+            compareStateValueState = null
         }
     }
 
@@ -345,6 +385,10 @@ class ChooseConstraintViewModel @Inject constructor(
                         endMinute = 0,
                     )
                 }
+
+                ConstraintId.COMPARE_STATE_VALUE -> {
+                    compareStateValueState = buildCompareStateValueState()
+                }
             }
         }
     }
@@ -520,6 +564,14 @@ class ChooseConstraintViewModel @Inject constructor(
             )
             add(unsupportedGroup)
         }
+    }
+
+    private fun buildCompareStateValueState(): CompareStateValueSheetState {
+        return CompareStateValueSheetState(
+            stateKey = "",
+            operator = CompareStateValueOperatorEnum.NONE,
+            value = ""
+        )
     }
 
     private fun buildListItems(constraintIds: List<ConstraintId>): List<SimpleListItemModel> =
@@ -724,4 +776,32 @@ data class DisplayResolutionSheetState(
 private fun SizeKM.matchesIgnoringOrientation(other: SizeKM): Boolean {
     return (width == other.width && height == other.height) ||
         (width == other.height && height == other.width)
+}
+
+/**
+ * State for the Compare State Value bottom sheet.
+ *
+ * @param stateKey the state value key to compare values with.
+ * @param operator the comparison operator.
+ * @param value the value to compare to the state value associated with stateKey.
+ */
+data class CompareStateValueSheetState(
+    val stateKey: String,
+    val operator: CompareStateValueOperatorEnum,
+    val value: String
+) {
+    val isValid: Boolean
+        get() = try {
+            if (operator != CompareStateValueOperatorEnum.NONE &&
+                operator != CompareStateValueOperatorEnum.IS &&
+                operator != CompareStateValueOperatorEnum.IS_NOT) {
+                val parsed: Double = value.toDouble()
+
+                true
+            } else {
+                true
+            }
+        } catch (_: NumberFormatException) {
+            false
+        }
 }

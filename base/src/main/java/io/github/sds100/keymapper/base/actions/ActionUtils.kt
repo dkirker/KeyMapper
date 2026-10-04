@@ -250,6 +250,7 @@ object ActionUtils {
         ActionId.MODIFY_SETTING -> ActionCategory.APPS
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
         ActionId.TALKBACK_GESTURE -> ActionCategory.INTERFACE
+        ActionId.SET_STATE -> ActionCategory.SPECIAL
     }
 
     @StringRes
@@ -523,6 +524,8 @@ object ActionUtils {
         ActionId.DISABLE_HOTSPOT -> R.string.action_disable_hotspot
 
         ActionId.TALKBACK_GESTURE -> R.string.action_talkback_gesture
+
+        ActionId.SET_STATE -> R.string.action_set_state
     }
 
     @DrawableRes
@@ -1095,6 +1098,7 @@ object ActionUtils {
         ActionId.ENABLE_HOTSPOT -> Icons.Outlined.WifiTethering
         ActionId.DISABLE_HOTSPOT -> Icons.Outlined.WifiTetheringOff
         ActionId.TALKBACK_GESTURE -> Icons.Outlined.Accessibility
+        ActionId.SET_STATE -> Icons.Outlined.DataObject
     }
 }
 
@@ -1146,6 +1150,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,
     is ActionData.TalkBackGesture,
+    is ActionData.SetState,
         -> true
 
     else -> false

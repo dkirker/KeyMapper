@@ -148,6 +148,11 @@ data class ActionEntity(
 
         const val EXTRA_TALKBACK_GESTURE_TYPE = "extra_talkback_gesture_type"
 
+        const val EXTRA_SET_STATE_VALUE = "extra_set_state_value";
+        const val EXTRA_SET_STATE_RESET_ON_TIMEOUT = "extra_set_state_reset_on_timeout";
+        const val EXTRA_SET_STATE_RESET_TIMEOUT = "extra_set_state_reset_timeout";
+        const val EXTRA_SET_STATE_RESET_VALUE = "extra_set_state_reset_value";
+
         val DESERIALIZER = jsonDeserializer {
             val typeString by it.json.byNullableString(NAME_ACTION_TYPE)
             // If it is an unknown type then do not deserialize
@@ -203,6 +208,7 @@ data class ActionEntity(
         MODIFY_SETTING,
         CREATE_NOTIFICATION,
         TOAST,
+        SET_STATE
     }
 
     constructor(
